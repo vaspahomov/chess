@@ -17,10 +17,16 @@
 * Создать меню
 * Создание уровней сложности
 
+# Требования к запуску прогрммы 
+* python 3.6
+* pygame 1.9.3
+
 # Примеры запуска 
 Программа запускается вызовом файла chess.py без параметров
+```sh 
+python chess.py
+```
 
 # Автор 
-
 | [<img src="https://avatars0.githubusercontent.com/u/37302383?s=460&v=4" width="100px;"/><br /><sub><b>Пахомов Василий</b></sub>](https://github.com/vaspahomov)<br /> |
 |---|
