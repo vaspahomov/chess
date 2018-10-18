@@ -21,5 +21,6 @@
 Программа запускается вызовом файла chess.py без параметров
 
 #Автор 
+
 | [<img src="https://avatars0.githubusercontent.com/u/37302383?s=460&v=4" width="100px;"/><br /><sub><b>Пахомов Василий</b></sub>](https://github.com/vaspahomov)<br /> |
 |---|
