@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from chess_pieces import ChessPieces
 from color import Color
 from game_field import Field
 
@@ -20,13 +21,22 @@ class Game:
                  height,
                  # back_image_filename,
                  frame_rate=30):
+        self.width = width
+        self.height = height
+
+        self.check_white = False
+        self.check_black = False
+
+        self.next_turn = Color.WHITE
+
         self.objects = []
         self.figures = []
-        self.field = Field(480, 480)
+        self.field = Field(width, height)
 
         self.keydown_handlers = defaultdict(list)
         self.mouse_handlers = defaultdict(list)
 
+        self.mouse_handlers[pygame.MOUSEBUTTONDOWN].append(self.on_mouse_down)
         self.set_figures()
 
         # self.background_image = pygame.image.load(back_image_filename)
@@ -41,11 +51,57 @@ class Game:
         pygame.display.set_caption(caption)
         self.clock = pygame.time.Clock()
 
+    # def handle(self, key):
+    #     if key == pygame.MOUSEBUTTONDOWN:
+    #         self.on_mouse_down()
+
+    def on_mouse_down(self, type, pos):
+        x, y = pygame.mouse.get_pos()
+        x = x * 8 // self.width
+        y = y * 8 // self.height
+        if self.check_white or self.check_black:
+            for figure in self.figures:
+                if figure.x == x and figure.y == y and \
+                        figure.color == self.next_turn and figure.figure == ChessPieces.KING:
+                    # if not figure.clicked:
+                    figure.clicked = True
+                    self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
+                    return
+
+        for figure in self.figures:
+            if figure.clicked:
+                if figure.check_valid_position(x, y, self.figures):
+                    for f in self.figures:
+                        if f.x == x and f.y == y and f.color != figure.color:
+                            self.figures.remove(f)
+
+                    if figure.x == x and figure.y == y:
+                        self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
+
+                    figure.set_figure(x, y)
+
+                    king = None
+                    for f in self.figures:
+                        if f.figure == ChessPieces.KING and f.color != figure.color:
+                            king = f
+
+                    check = figure.check_valid_position(king.x, king.y, self.figures)
+                    if check and figure.color == Color.WHITE:
+                        self.check_white = True
+                    elif check and figure.color == Color.BLACK:
+                        self.check_black = True
+
+                return
+
+        for figure in self.figures:
+            if figure.x == x and figure.y == y and figure.color == self.next_turn:
+                figure.clicked = True
+                self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
+
     def set_figures(self):
         for x in range(8):
             self.figures.append(Pawn(Color.BLACK, x, 1))
             self.figures.append(Pawn(Color.WHITE, x, 6))
-
 
         self.figures.append(Bishop(Color.BLACK, 2, 0))
         self.figures.append(Bishop(Color.BLACK, 5, 0))
@@ -68,8 +124,10 @@ class Game:
         self.figures.append(King(Color.BLACK, 4, 0))
         self.figures.append(King(Color.WHITE, 3, 7))
 
-
     def update(self):
+        for f in self.figures:
+            f.update()
+
         for o in self.objects:
             o.update()
 
@@ -97,7 +155,7 @@ class Game:
             elif event.type in (pygame.MOUSEBUTTONDOWN,
                                 pygame.MOUSEBUTTONUP,
                                 pygame.MOUSEMOTION):
-                for handler in self.mouse_handlers:
+                for handler in self.mouse_handlers[event.type]:
                     handler(event.type, event.pos)
 
     def run(self):
