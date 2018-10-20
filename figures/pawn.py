@@ -11,6 +11,14 @@ class Pawn(Figure):
 
         self.is_first_move = True
 
+    def check_cell_under_attack(self, x, y, figures):
+        if self.x == x + 1 or self.x == x - 1:
+            if self.y == y + 1 and self.color == Color.WHITE:
+                return True
+            if self.y == y - 1 and self.color == Color.BLACK:
+                return True
+        pass
+
     def check_valid_position(self, x, y, figures):
         if self.set_back(x, y):
             return True

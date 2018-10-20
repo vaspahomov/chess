@@ -20,7 +20,8 @@ class Game:
                  width,
                  height,
                  # back_image_filename,
-                 frame_rate=30):
+                 frame_rate=60):
+
         self.width = width
         self.height = height
 
@@ -51,52 +52,68 @@ class Game:
         pygame.display.set_caption(caption)
         self.clock = pygame.time.Clock()
 
-    # def handle(self, key):
-    #     if key == pygame.MOUSEBUTTONDOWN:
-    #         self.on_mouse_down()
-
     def on_mouse_down(self, type, pos):
         x, y = pygame.mouse.get_pos()
         x = x * 8 // self.width
         y = y * 8 // self.height
-        if self.check_white or self.check_black:
-            for figure in self.figures:
-                if figure.x == x and figure.y == y and \
-                        figure.color == self.next_turn and figure.figure == ChessPieces.KING:
-                    # if not figure.clicked:
-                    figure.clicked = True
-                    self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
-                    return
+        if not self.set_figure_on_table(x, y):
+            self.get_figure_from_table(x, y)
 
-        for figure in self.figures:
-            if figure.clicked:
-                if figure.check_valid_position(x, y, self.figures):
-                    for f in self.figures:
-                        if f.x == x and f.y == y and f.color != figure.color:
-                            self.figures.remove(f)
-
-                    if figure.x == x and figure.y == y:
-                        self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
-
-                    figure.set_figure(x, y)
-
-                    king = None
-                    for f in self.figures:
-                        if f.figure == ChessPieces.KING and f.color != figure.color:
-                            king = f
-
-                    check = figure.check_valid_position(king.x, king.y, self.figures)
-                    if check and figure.color == Color.WHITE:
-                        self.check_white = True
-                    elif check and figure.color == Color.BLACK:
-                        self.check_black = True
-
-                return
-
+    def get_figure_from_table(self, x, y):
         for figure in self.figures:
             if figure.x == x and figure.y == y and figure.color == self.next_turn:
                 figure.clicked = True
                 self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
+
+    def set_figure_on_table(self, x, y):
+        for figure in self.figures:
+            if figure.clicked:
+                if figure.check_valid_position(x, y, self.figures):
+
+                    if figure.x == x and figure.y == y:
+                        self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
+                        figure.set_figure(x, y)
+                        return True
+
+                    if self.find_move_under_attack(figure.color, figure.figure == ChessPieces.KING, x, y):
+                        return False
+
+                    figure.set_figure(x, y)
+                    self.remove_captured_figure(x, y, figure.color)
+
+                    self.set_check(figure)
+
+                return True
+
+    def remove_captured_figure(self, x, y, color_of_attack):
+        for f in self.figures:
+            if f.x == x and f.y == y and f.color != color_of_attack:
+                self.figures.remove(f)
+
+    def find_move_under_attack(self, color, king_clicked = False, x = None, y = None):
+        self_king = self.find_king(color)
+        for f in self.figures:
+            if f.color != color:
+                if king_clicked:
+                    if f.check_cell_under_attack(x, y, self.figures):
+                        return True
+                else:
+                    if f.check_cell_under_attack(self_king.x, self_king.y, self.figures):
+                        return True
+
+    def find_king(self, color):
+        for f in self.figures:
+            if f.figure == ChessPieces.KING and f.color == color:
+                return f
+
+    def set_check(self, figure):
+        king = self.find_king(Color.BLACK if figure.color == Color.WHITE else Color.WHITE)
+
+        check = figure.check_cell_under_attack(king.x, king.y, self.figures)
+        if check and figure.color == Color.WHITE:
+            self.check_white = True
+        elif check and figure.color == Color.BLACK:
+            self.check_black = True
 
     def set_figures(self):
         for x in range(8):
@@ -119,10 +136,10 @@ class Game:
         self.figures.append(Rook(Color.WHITE, 7, 7))
 
         self.figures.append(Queen(Color.BLACK, 3, 0))
-        self.figures.append(Queen(Color.WHITE, 4, 7))
+        self.figures.append(Queen(Color.WHITE, 3, 7))
 
         self.figures.append(King(Color.BLACK, 4, 0))
-        self.figures.append(King(Color.WHITE, 3, 7))
+        self.figures.append(King(Color.WHITE, 4, 7))
 
     def update(self):
         for f in self.figures:
