@@ -1,3 +1,5 @@
+import sys
+
 from collections import defaultdict
 
 from chess_pieces import ChessPieces
@@ -56,6 +58,7 @@ class Game:
         x, y = pygame.mouse.get_pos()
         x = x * 8 // self.width
         y = y * 8 // self.height
+
         if not self.set_figure_on_table(x, y):
             self.get_figure_from_table(x, y)
 
@@ -83,14 +86,27 @@ class Game:
 
                     self.set_check(figure)
 
+                    if self.find_match(Color.BLACK if figure.color == Color.WHITE else Color.WHITE):
+                        sys.exit(1)
                 return True
+
+    def find_match(self, color):
+        for f in self.figures:
+            if f.color == color:
+                for i in range(8):
+                    for j in range(8):
+                        if f.x == i and f.y == j:
+                            continue
+                        if f.check_valid_position(i, j, self.figures):
+                            return False
+        return True
 
     def remove_captured_figure(self, x, y, color_of_attack):
         for f in self.figures:
             if f.x == x and f.y == y and f.color != color_of_attack:
                 self.figures.remove(f)
 
-    def find_move_under_attack(self, color, king_clicked = False, x = None, y = None):
+    def find_move_under_attack(self, color, king_clicked=False, x=None, y=None):
         self_king = self.find_king(color)
         for f in self.figures:
             if f.color != color:
@@ -117,29 +133,55 @@ class Game:
 
     def set_figures(self):
         for x in range(8):
-            self.figures.append(Pawn(Color.BLACK, x, 1))
-            self.figures.append(Pawn(Color.WHITE, x, 6))
+            self.figures.append(Pawn(x, 1, Color.BLACK, self.width // 8, self.height // 8))
+            self.figures.append(Pawn(x, 6, Color.WHITE, self.width // 8, self.height // 8))
 
-        self.figures.append(Bishop(Color.BLACK, 2, 0))
-        self.figures.append(Bishop(Color.BLACK, 5, 0))
-        self.figures.append(Bishop(Color.WHITE, 2, 7))
-        self.figures.append(Bishop(Color.WHITE, 5, 7))
+        self.figures.append(Bishop(2, 0, Color.BLACK, self.width // 8, self.height // 8))
+        self.figures.append(Bishop(5, 0, Color.BLACK, self.width // 8, self.height // 8))
+        self.figures.append(Bishop(2, 7, Color.WHITE, self.width // 8, self.height // 8))
+        self.figures.append(Bishop(5, 7, Color.WHITE, self.width // 8, self.height // 8))
 
-        self.figures.append(Knight(Color.BLACK, 1, 0))
-        self.figures.append(Knight(Color.BLACK, 6, 0))
-        self.figures.append(Knight(Color.WHITE, 1, 7))
-        self.figures.append(Knight(Color.WHITE, 6, 7))
+        self.figures.append(Knight(1, 0, Color.BLACK, self.width // 8, self.height // 8))
+        self.figures.append(Knight(6, 0, Color.BLACK, self.width // 8, self.height // 8))
+        self.figures.append(Knight(1, 7, Color.WHITE, self.width // 8, self.height // 8))
+        self.figures.append(Knight(6, 7, Color.WHITE, self.width // 8, self.height // 8))
 
-        self.figures.append(Rook(Color.BLACK, 0, 0))
-        self.figures.append(Rook(Color.BLACK, 7, 0))
-        self.figures.append(Rook(Color.WHITE, 0, 7))
-        self.figures.append(Rook(Color.WHITE, 7, 7))
+        self.figures.append(Rook(0, 0, Color.BLACK, self.width // 8, self.height // 8))
+        self.figures.append(Rook(7, 0, Color.BLACK, self.width // 8, self.height // 8))
+        self.figures.append(Rook(0, 7, Color.WHITE, self.width // 8, self.height // 8))
+        self.figures.append(Rook(7, 7, Color.WHITE, self.width // 8, self.height // 8))
 
-        self.figures.append(Queen(Color.BLACK, 3, 0))
-        self.figures.append(Queen(Color.WHITE, 3, 7))
+        self.figures.append(Queen(3, 0, Color.BLACK, self.width // 8, self.height // 8))
+        self.figures.append(Queen(3, 7, Color.WHITE, self.width // 8, self.height // 8))
 
-        self.figures.append(King(Color.BLACK, 4, 0))
-        self.figures.append(King(Color.WHITE, 4, 7))
+        self.figures.append(King(4, 0, Color.BLACK, self.width // 8, self.height // 8))
+        self.figures.append(King(4, 7, Color.WHITE, self.width // 8, self.height // 8))
+
+    # def set_figures(self):
+    #     for x in range(8):
+    #         self.figures.append(Pawn(Color.BLACK, x, 1))
+    #         self.figures.append(Pawn(Color.WHITE, x, 6))
+    #
+    #     self.figures.append(Bishop(Color.BLACK, 2, 0))
+    #     self.figures.append(Bishop(Color.BLACK, 5, 0))
+    #     self.figures.append(Bishop(Color.WHITE, 2, 7))
+    #     self.figures.append(Bishop(Color.WHITE, 5, 7))
+    #
+    #     self.figures.append(Knight(Color.BLACK, 1, 0))
+    #     self.figures.append(Knight(Color.BLACK, 6, 0))
+    #     self.figures.append(Knight(Color.WHITE, 1, 7))
+    #     self.figures.append(Knight(Color.WHITE, 6, 7))
+    #
+    #     self.figures.append(Rook(Color.BLACK, 0, 0))
+    #     self.figures.append(Rook(Color.BLACK, 7, 0))
+    #     self.figures.append(Rook(Color.WHITE, 0, 7))
+    #     self.figures.append(Rook(Color.WHITE, 7, 7))
+    #
+    #     self.figures.append(Queen(Color.BLACK, 3, 0))
+    #     self.figures.append(Queen(Color.WHITE, 3, 7))
+    #
+    #     self.figures.append(King(Color.BLACK, 4, 0))
+    #     self.figures.append(King(Color.WHITE, 4, 7))
 
     def update(self):
         for f in self.figures:
@@ -188,4 +230,5 @@ class Game:
 
 
 game = Game("Chess", 480, 480)
+# game = Game("Chess", 600, 600)
 game.run()

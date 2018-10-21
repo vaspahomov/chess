@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class Figure(GameObject):
-    def __init__(self, color, x, y, w=60, h=60):
+    def __init__(self, x, y, color, w=60, h=60):
         super().__init__(x * w, y * h, w, h)
         self.x = x
         self.y = y
