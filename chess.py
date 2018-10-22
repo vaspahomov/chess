@@ -21,7 +21,6 @@ class Game:
                  caption,
                  width,
                  height,
-                 # back_image_filename,
                  frame_rate=60):
 
         self.width = width
@@ -42,7 +41,6 @@ class Game:
         self.mouse_handlers[pygame.MOUSEBUTTONDOWN].append(self.on_mouse_down)
         self.set_figures()
 
-        # self.background_image = pygame.image.load(back_image_filename)
         self.frame_rate = frame_rate
         self.game_over = False
 
@@ -77,12 +75,11 @@ class Game:
                         self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
                         figure.set_figure(x, y)
                         return True
+
                     self.find_check(figure, x, y)
 
-                    # if self.find_move_under_attack(figure.color, figure.figure == ChessPieces.KING, x, y):
-                    #     return False
+                    # self.set_check(figure)
 
-                    self.set_check(figure)
                     figure.set_figure(x, y)
                 return True
 
@@ -94,8 +91,6 @@ class Game:
                         if f.x == i and f.y == j:
                             continue
                         if f.check_valid_position(i, j, self.figures) and not self.find_check(f, f.x, f.y):
-
-                            #проверка на шах
                             return False
         return True
 
@@ -123,14 +118,14 @@ class Game:
             if f.figure == ChessPieces.KING and f.color == color:
                 return f
 
-    def set_check(self, figure):
-        king = self.find_king(Color.BLACK if figure.color == Color.WHITE else Color.WHITE)
-
-        check = figure.check_cell_under_attack(king.x, king.y, self.figures)
-        if check and figure.color == Color.WHITE:
-            self.check_white = True
-        elif check and figure.color == Color.BLACK:
-            self.check_black = True
+    # def set_check(self, figure):
+    #     king = self.find_king(Color.BLACK if figure.color == Color.WHITE else Color.WHITE)
+    #
+    #     check = figure.check_cell_under_attack(king.x, king.y, self.figures)
+    #     if check and figure.color == Color.WHITE:
+    #         self.check_white = True
+    #     elif check and figure.color == Color.BLACK:
+    #         self.check_black = True
 
     def set_figures(self):
         for x in range(8):
@@ -157,32 +152,6 @@ class Game:
 
         self.figures.append(King(4, 0, Color.BLACK, self.width // 8, self.height // 8))
         self.figures.append(King(4, 7, Color.WHITE, self.width // 8, self.height // 8))
-
-    # def set_figures(self):
-    #     for x in range(8):
-    #         self.figures.append(Pawn(Color.BLACK, x, 1))
-    #         self.figures.append(Pawn(Color.WHITE, x, 6))
-    #
-    #     self.figures.append(Bishop(Color.BLACK, 2, 0))
-    #     self.figures.append(Bishop(Color.BLACK, 5, 0))
-    #     self.figures.append(Bishop(Color.WHITE, 2, 7))
-    #     self.figures.append(Bishop(Color.WHITE, 5, 7))
-    #
-    #     self.figures.append(Knight(Color.BLACK, 1, 0))
-    #     self.figures.append(Knight(Color.BLACK, 6, 0))
-    #     self.figures.append(Knight(Color.WHITE, 1, 7))
-    #     self.figures.append(Knight(Color.WHITE, 6, 7))
-    #
-    #     self.figures.append(Rook(Color.BLACK, 0, 0))
-    #     self.figures.append(Rook(Color.BLACK, 7, 0))
-    #     self.figures.append(Rook(Color.WHITE, 0, 7))
-    #     self.figures.append(Rook(Color.WHITE, 7, 7))
-    #
-    #     self.figures.append(Queen(Color.BLACK, 3, 0))
-    #     self.figures.append(Queen(Color.WHITE, 3, 7))
-    #
-    #     self.figures.append(King(Color.BLACK, 4, 0))
-    #     self.figures.append(King(Color.WHITE, 4, 7))
 
     def update(self):
         for f in self.figures:
@@ -220,7 +189,6 @@ class Game:
 
     def run(self):
         while not self.game_over:
-            # self.surface.blit(self.background_image, (0, 0))
             self.update()
             self.draw()
             self.handle_events()
@@ -236,5 +204,4 @@ class Game:
 
 
 game = Game("Chess", 480, 480)
-# game = Game("Chess", 600, 600)
 game.run()

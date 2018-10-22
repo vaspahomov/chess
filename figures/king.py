@@ -1,4 +1,5 @@
 from chess_pieces import ChessPieces
+from color import Color
 from figure import Figure
 import pygame
 
@@ -21,3 +22,55 @@ class King(Figure):
                 self.y <= y + 1 and self.y >= y - 1:
             if self.x != x or self.y != y:
                 return True
+
+        if self.y == y:
+            if self.color == Color.WHITE:
+                if self.x != 4 and self.y != 7:
+                    return
+                if self.x == x - 2:
+                    imposable = False
+                    for f in figures:
+                        if f.x == 6 and f.y == 7 or f.x == 5 and f.y == 7:
+                            imposable = True
+                            break
+                    if not imposable:
+                        for f in figures:
+                            if f.x == 7 and f.y == 7:
+                                f.set_figure(5, 7)
+                        self.set_figure(6,7)
+                if self.x == x + 2:
+                    imposable = False
+                    for f in figures:
+                        if (f.x == 3 and f.y == 7) or (f.x == 2 and f.y == 7) or (f.x == 1 and f.y == 7):
+                            imposable = True
+                            break
+                    if not imposable:
+                        for f in figures:
+                            if f.x == 0 and f.y == 7:
+                                f.set_figure(3, 7)
+                        self.set_figure(2,7)
+            if self.color == Color.BLACK:
+                if self.x != 4 and self.y != 0:
+                    return
+                if self.x == x - 2:
+                    imposable = False
+                    for f in figures:
+                        if f.x == 6 and f.y == 0 or f.x == 5 and f.y == 0:
+                            imposable = True
+                            break
+                    if not imposable:
+                        for f in figures:
+                            if f.x == 7 and f.y == 0:
+                                f.set_figure(5, 0)
+                        self.set_figure(6,0)
+                if self.x == x + 2:
+                    imposable = False
+                    for f in figures:
+                        if (f.x == 3 and f.y == 0) or (f.x == 2 and f.y == 0) or (f.x == 1 and f.y == 0):
+                            imposable = True
+                            break
+                    if not imposable:
+                        for f in figures:
+                            if f.x == 0 and f.y == 0:
+                                f.set_figure(3, 0)
+                        self.set_figure(2,0)
