@@ -77,17 +77,13 @@ class Game:
                         self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
                         figure.set_figure(x, y)
                         return True
+                    self.find_check(figure, x, y)
 
-                    if self.find_move_under_attack(figure.color, figure.figure == ChessPieces.KING, x, y):
-                        return False
-
-                    figure.set_figure(x, y)
-                    self.remove_captured_figure(x, y, figure.color)
+                    # if self.find_move_under_attack(figure.color, figure.figure == ChessPieces.KING, x, y):
+                    #     return False
 
                     self.set_check(figure)
-
-                    if self.find_match(Color.BLACK if figure.color == Color.WHITE else Color.WHITE):
-                        sys.exit(1)
+                    figure.set_figure(x, y)
                 return True
 
     def find_match(self, color):
@@ -97,7 +93,9 @@ class Game:
                     for j in range(8):
                         if f.x == i and f.y == j:
                             continue
-                        if f.check_valid_position(i, j, self.figures):
+                        if f.check_valid_position(i, j, self.figures) and not self.find_check(f, f.x, f.y):
+
+                            #проверка на шах
                             return False
         return True
 
@@ -105,17 +103,20 @@ class Game:
         for f in self.figures:
             if f.x == x and f.y == y and f.color != color_of_attack:
                 self.figures.remove(f)
+                return f
 
-    def find_move_under_attack(self, color, king_clicked=False, x=None, y=None):
-        self_king = self.find_king(color)
+    def find_check(self, figure, x, y):
+        old_x, old_y = figure.x, figure.y
+        figure.x, figure.y = x, y
+
+        removed = self.remove_captured_figure(x, y, figure.color)
+        king = self.find_king(figure.color)
         for f in self.figures:
-            if f.color != color:
-                if king_clicked:
-                    if f.check_cell_under_attack(x, y, self.figures):
-                        return True
-                else:
-                    if f.check_cell_under_attack(self_king.x, self_king.y, self.figures):
-                        return True
+            if f.check_cell_under_attack(king.x, king.y, self.figures):
+                figure.x, figure.y = old_x, old_y
+                if removed != None:
+                    self.figures.append(removed)
+                return True
 
     def find_king(self, color):
         for f in self.figures:
@@ -223,7 +224,12 @@ class Game:
             self.update()
             self.draw()
             self.handle_events()
-
+            if self.find_match(Color.BLACK):
+                print('White')
+                sys.exit(1)
+            if self.find_match(Color.WHITE):
+                print('Black')
+                sys.exit(1)
             pygame.display.update()
 
             self.clock.tick(self.frame_rate)
