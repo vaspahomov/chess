@@ -76,11 +76,15 @@ class Game:
                         figure.set_figure(x, y)
                         return True
 
-                    self.find_check(figure, x, y)
+                    if self.find_check(figure, x, y):
+                        return True
+
+                    self.remove_captured_figure(x, y, figure.color)
 
                     # self.set_check(figure)
 
                     figure.set_figure(x, y)
+                    self.find_match(Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE)
                 return True
 
     def find_match(self, color):
@@ -90,7 +94,9 @@ class Game:
                     for j in range(8):
                         if f.x == i and f.y == j:
                             continue
-                        if f.check_valid_position(i, j, self.figures) and not self.find_check(f, f.x, f.y):
+
+                        if f.check_valid_position(i, j, self.figures):
+                            # if not self.find_check(f, i, j, Color.BLACK if f.color == Color.WHITE else Color.WHITE):
                             return False
         return True
 
@@ -100,18 +106,26 @@ class Game:
                 self.figures.remove(f)
                 return f
 
-    def find_check(self, figure, x, y):
+    def find_check(self, figure, x, y, color = None):
+        if color is None:
+            color = figure.color
+
         old_x, old_y = figure.x, figure.y
         figure.x, figure.y = x, y
 
-        removed = self.remove_captured_figure(x, y, figure.color)
-        king = self.find_king(figure.color)
+        removed = self.remove_captured_figure(x, y, color)
+        king = self.find_king(color)
         for f in self.figures:
-            if f.check_cell_under_attack(king.x, king.y, self.figures):
-                figure.x, figure.y = old_x, old_y
-                if removed != None:
-                    self.figures.append(removed)
-                return True
+            if color != f.color:
+                if f.check_cell_under_attack(king.x, king.y, self.figures):
+                    figure.x, figure.y = old_x, old_y
+                    if removed != None:
+                        self.figures.append(removed)
+                    return True
+
+        figure.x, figure.y = old_x, old_y
+        if removed != None:
+            self.figures.append(removed)
 
     def find_king(self, color):
         for f in self.figures:
@@ -192,12 +206,12 @@ class Game:
             self.update()
             self.draw()
             self.handle_events()
-            if self.find_match(Color.BLACK):
-                print('White')
-                sys.exit(1)
-            if self.find_match(Color.WHITE):
-                print('Black')
-                sys.exit(1)
+            # if self.find_match(Color.BLACK):
+            #     print('White')
+            #     sys.exit(1)
+            # if self.find_match(Color.WHITE):
+            #     print('Black')
+            #     sys.exit(1)
             pygame.display.update()
 
             self.clock.tick(self.frame_rate)

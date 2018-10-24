@@ -27,8 +27,8 @@ class Figure(GameObject):
         self.bounds.y = self.y / 8 * 480
 
     def check_cell_under_attack(self, x, y, figures):
-        if self.x== x and self.y == y:
-            return False
+        if self.x == x and self.y == y:
+            return True
         return self.check_valid_position(x, y, figures)
 
     def check_valid_position(self, x, y, figures):
