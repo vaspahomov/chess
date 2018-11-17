@@ -15,9 +15,7 @@ class Knight(Figure):
             return False
         if self.x == x + 2 or self.x == x - 2:
             if self.y == y - 1 or self.y == y + 1:
-                print(1)
                 return True
         if self.x == x + 1 or self.x == x - 1:
             if self.y == y - 2 or self.y == y + 2:
-                print(1)
                 return True
