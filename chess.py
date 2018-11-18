@@ -16,6 +16,20 @@ from figures.rook import Rook
 import pygame
 
 
+# TODO GUI
+# TODO Минимальный интеллект (выполнение правил игры)
+# TODO Взятие на проходе
+# TODO Обработка пата
+# TODO Ничья
+# TODO Компьютер-оппонент, возможность игроку выбрать цвет
+# TODO Режим hot seat
+# TODO Сохранение и загрузка партии, ведение лога
+# TODO Наличие минимум одной нестандартной фигуры (или правила):
+#
+# TODO фигура, выполняющая рандомный ход в случае отсутствия хода игрока заданное время; после хода принадлежность фигуры меняется
+# TODO возможность пропустить ход, но перекрасить одну из своих фигур в цвет противника
+
+
 class Game:
     def __init__(self,
                  caption,
@@ -106,7 +120,7 @@ class Game:
                 self.figures.remove(f)
                 return f
 
-    def find_check(self, figure, x, y, color = None):
+    def find_check(self, figure, x, y, color=None):
         if color is None:
             color = figure.color
 
@@ -215,6 +229,7 @@ class Game:
             pygame.display.update()
 
             self.clock.tick(self.frame_rate)
+
 
 if __name__ == '__main__':
     game = Game("Chess", 480, 480)
