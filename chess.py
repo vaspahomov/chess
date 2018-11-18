@@ -81,6 +81,8 @@ class Game:
         for figure in self.figures:
             if figure.clicked:
                 if figure.check_valid_position(x, y, self.figures):
+                    if figure.clicked == False:
+                        return True
 
                     if figure.x == x and figure.y == y:
                         self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE

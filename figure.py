@@ -40,10 +40,7 @@ class Figure(GameObject):
                 return f.color
 
     def set_back(self, x, y):
-        if self.x == x and self.y == y:
-            self.clicked = False
-            return True
-        return False
+        return self.x == x and self.y == y
 
     def remove(self):
         self.alive = False
