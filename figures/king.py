@@ -10,9 +10,10 @@ class King(Figure):
         self.figure = ChessPieces.KING
         self.white_image = pygame.image.load('imgs/white_king.png')
         self.black_image = pygame.image.load('imgs/black_king.png')
+        self.castling_possible = True
 
     def check_castling(self, x, y, figures):
-        if self.y == y:
+        if self.y == y and self.castling_possible:
             if self.color == Color.WHITE:
                 if self.x != 4 and self.y != 7:
                     return False
@@ -79,4 +80,8 @@ class King(Figure):
             if self.x != x or self.y != y:
                 return True
 
-        return self.check_castling(x, y, figures)
+        if self.check_castling(x, y, figures):
+            self.castling_possible = False
+            return True
+
+        return False

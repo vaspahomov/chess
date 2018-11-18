@@ -134,6 +134,7 @@ class Game:
                     figure.x, figure.y = old_x, old_y
                     if removed != None:
                         self.figures.append(removed)
+                    king.castling_possible = False
                     return True
 
         figure.x, figure.y = old_x, old_y
