@@ -11,6 +11,7 @@ from figures.pawn import Pawn
 from figures.queen import Queen
 from figures.rook import Rook
 from game_field import Field
+from game_serializer import GameSerializer
 
 
 # TODO Обработка пата
@@ -48,6 +49,9 @@ class Game:
         self.mouse_handlers[pygame.MOUSEBUTTONDOWN].append(self.on_mouse_down)
         self.set_figures()
 
+        self.keydown_handlers[pygame.K_s].append(self.on_game_save)
+        self.keydown_handlers[pygame.K_l].append(self.on_game_load)
+
         self.frame_rate = frame_rate
         self.game_over = False
 
@@ -58,6 +62,16 @@ class Game:
         self.surface = pygame.display.set_mode((width, height))
         pygame.display.set_caption(caption)
         self.clock = pygame.time.Clock()
+
+    def on_game_load(self, key):
+        figures, objects = GameSerializer().load_game()
+
+        self.figures = figures
+        self.objects = objects
+        # self.field = field
+
+    def on_game_save(self, key):
+        GameSerializer().save_game(self.figures, self.objects)
 
     def on_mouse_down(self, type, pos):
         x, y = pygame.mouse.get_pos()
@@ -261,4 +275,5 @@ class Game:
 
 if __name__ == '__main__':
     game = Game("Chess", 480, 480)
+
     game.run()
