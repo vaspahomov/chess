@@ -13,10 +13,8 @@ from figures.rook import Rook
 from game_field import Field
 
 
-# TODO Минимальный интеллект (выполнение правил игры)
 # TODO Обработка пата
 # TODO Ничья
-# TODO Компьютер-оппонент, возможность игроку выбрать цвет
 # TODO Сохранение и загрузка партии, ведение лога
 # TODO Наличие минимум одной нестандартной фигуры (или правила):
 
@@ -37,6 +35,7 @@ class Game:
         self.check_white = False
         self.check_black = False
 
+        self.single_mode = False
         self.next_turn = Color.WHITE
 
         self.objects = []
@@ -64,38 +63,57 @@ class Game:
         x, y = pygame.mouse.get_pos()
         x = x * 8 // self.width
         y = y * 8 // self.height
+        self.on_game_move(x, y)
 
-        if not self.set_figure_on_table(x, y):
-            self.get_figure_from_table(x, y)
+    def get_figure_with_position(self, x, y):
+        for f in self.figures:
+            if f.x == x and f.y == y:
+                return f
 
     def get_figure_from_table(self, x, y):
         for figure in self.figures:
             if figure.x == x and figure.y == y and figure.color == self.next_turn:
                 figure.clicked = True
-                self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
 
-    def set_figure_on_table(self, x, y):
+    def set_figure_on_table(self, figure, x, y):
+        if not figure:
+            return False
+
+        if figure.check_valid_position(x, y, self.figures):
+            if figure.clicked == False:
+                return True
+
+            if figure.x == x and figure.y == y:
+                figure.set_figure(x, y)
+                return True
+
+            if self.find_check(figure, x, y):
+                return True
+
+            self.remove_captured_figure(x, y, figure.color)
+
+            # self.set_check(figure)
+
+            figure.set_figure(x, y)
+            self.find_match(Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE)
+        return True
+
+    def get_clicked_figure(self):
         for figure in self.figures:
             if figure.clicked:
-                if figure.check_valid_position(x, y, self.figures):
-                    if figure.clicked == False:
-                        return True
+                return figure
 
-                    if figure.x == x and figure.y == y:
-                        self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
-                        figure.set_figure(x, y)
-                        return True
-
-                    if self.find_check(figure, x, y):
-                        return True
-
-                    self.remove_captured_figure(x, y, figure.color)
-
-                    # self.set_check(figure)
-
-                    figure.set_figure(x, y)
-                    self.find_match(Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE)
-                return True
+    def do_any_valid_move(self, color):
+        for f in self.figures:
+            if f.color != color:
+                continue
+            for x in range(8):
+                for y in range(8):
+                    if (f.check_valid_position(x, y, self.figures)):
+                        figure_in_this_cell = self.get_figure_with_position(x, y)
+                        if not figure_in_this_cell:
+                            f.set_figure(x, y)
+                            return
 
     def find_match(self, color):
         for f in self.figures:
@@ -177,6 +195,19 @@ class Game:
 
         self.figures.append(King(4, 0, Color.BLACK, self.width // 8, self.height // 8))
         self.figures.append(King(4, 7, Color.WHITE, self.width // 8, self.height // 8))
+
+    def on_game_move(self, x, y):
+        figure = self.get_figure_with_position(x, y)
+        clicked_figure = self.get_clicked_figure()
+        if not self.set_figure_on_table(clicked_figure, x, y):
+            if figure:
+                self.get_figure_from_table(figure.x, figure.y)
+
+        else:
+            if not self.single_mode:
+                self.next_turn = Color.BLACK if self.next_turn == Color.WHITE else Color.WHITE
+            else:
+                self.do_any_valid_move(Color.BLACK if clicked_figure.color == Color.WHITE else Color.WHITE)
 
     def update(self):
         for f in self.figures:
