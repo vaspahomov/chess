@@ -1,7 +1,7 @@
 import pygame
 
-from game_object import GameObject
 from color import Color
+from game_object import GameObject
 
 
 class Cell(GameObject):

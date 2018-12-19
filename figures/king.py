@@ -1,7 +1,8 @@
+import pygame
+
 from chess_pieces import ChessPieces
 from color import Color
 from figure import Figure
-import pygame
 
 
 class King(Figure):

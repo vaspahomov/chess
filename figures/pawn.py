@@ -1,6 +1,7 @@
+import pygame
+
 from color import Color
 from figure import Figure
-import pygame
 
 
 class Pawn(Figure):

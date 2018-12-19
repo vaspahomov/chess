@@ -1,7 +1,6 @@
 import unittest
 
 from color import Color
-from figure import Figure
 from figures.pawn import Pawn
 
 

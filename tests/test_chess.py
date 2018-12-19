@@ -1,9 +1,7 @@
-from chess import Game
 import unittest
-from unittest.mock import patch, Mock, MagicMock
-import pygame
-import threading
-import time
+from unittest.mock import MagicMock
+
+from chess import Game
 
 
 class TestChess(unittest.TestCase):
@@ -20,7 +18,6 @@ class TestChess(unittest.TestCase):
             # if self.find_match(Color.WHITE):
             #     print('Black')
             #     sys.exit(1)
-
 
         mock = MagicMock(Game)
         mock.run = mock_run

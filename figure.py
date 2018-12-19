@@ -2,7 +2,6 @@ import pygame
 
 from color import Color
 from game_object import GameObject
-from abc import ABCMeta, abstractmethod
 
 
 class Figure(GameObject):
@@ -13,7 +12,8 @@ class Figure(GameObject):
 
         self.figure = None
 
-        self.alive = True
+        self.true = True
+        self.alive = self.true
         self.white_image = None
         self.black_image = None
         self.color = color

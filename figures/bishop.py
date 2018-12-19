@@ -1,5 +1,6 @@
-from figure import Figure
 import pygame
+
+from figure import Figure
 
 
 class Bishop(Figure):

@@ -1,19 +1,16 @@
-import sys
-
 from collections import defaultdict
+
+import pygame
 
 from chess_pieces import ChessPieces
 from color import Color
-from game_field import Field
-
 from figures.bishop import Bishop
 from figures.king import King
 from figures.knight import Knight
 from figures.pawn import Pawn
 from figures.queen import Queen
 from figures.rook import Rook
-
-import pygame
+from game_field import Field
 
 
 # TODO Минимальный интеллект (выполнение правил игры)

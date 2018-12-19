@@ -2,7 +2,6 @@ import unittest
 
 from color import Color
 from figures.king import King
-from figures.queen import Queen
 from figures.rook import Rook
 
 

@@ -1,5 +1,6 @@
-from game_object import GameObject
 from unittest import TestCase
+
+from game_object import GameObject
 
 
 class TestGameObject(TestCase):
